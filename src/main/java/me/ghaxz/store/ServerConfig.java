@@ -1,48 +1,46 @@
 package me.ghaxz.store;
 
-import me.ghaxz.interfaces.ArgParser;
-
-import java.io.IOException;
-
 // Add RAM size
 
 public class ServerConfig {
-    private final String configName;
+    private String configName;
+
+
+
     private String storageDirectory;
-    private String type; // vanilla (vanilla, snapshot, ...), servers (paper, spigot, ...), modded (fabric, forge, ...), proxies (Waterfall, Bungeecord, ...)
+    private JarType type; // vanilla (vanilla, snapshot, ...), servers (paper, spigot, ...), modded (fabric, forge, ...), proxies (Waterfall, Bungeecord, ...)
     private String version;
+    private int ram;
 
     // default values
-    public ServerConfig(String configName) throws IOException {
-        this.configName = configName;
+    public ServerConfig() {
+        this.configName = null;
 
-        String defaultDir = ConfigFile.getConfig().getDefaultDirectory();
+        storageDirectory = ConfigFile.getConfig().getDefaultDirectory();
 
-        if(defaultDir == null) {
-            ArgParser.exitWithErrorMessage("Couldn't read default directory from config file.\n" +
-                    "Use the --dir argument to specify one manually, or configure the default directory.");
-        }
-
-        if(defaultDir != null && defaultDir.isBlank()) {
-            ArgParser.exitWithErrorMessage("Couldn't read default directory from config file.\n" +
-                    "Use the --dir argument to specify one manually, or configure the default directory.");
-        }
-
-        storageDirectory = defaultDir;
-
-        // todo (see JarTypeManager)
-        type = null;
+        type = JarTypeManager.getInstance().getJarTypeByName("vanilla");
 
         // If empty, api returns latest
         version = "";
+
+        // 2G ram is default
+        ram = 2048;
+    }
+
+    public void setConfigName(String configName) {
+        this.configName = configName;
     }
 
     public void setStorageDirectory(String storageDirectory) {
         this.storageDirectory = storageDirectory;
     }
 
-    public void setType(String type) {
+    public void setType(JarType type) {
         this.type = type;
+    }
+
+    public void setRam(int ram) {
+        this.ram = ram;
     }
 
     public void setVersion(String version) {
@@ -57,11 +55,15 @@ public class ServerConfig {
         return storageDirectory;
     }
 
-    public String getType() {
+    public JarType getType() {
         return type;
     }
 
     public String getVersion() {
         return version;
+    }
+
+    public int getRam() {
+        return ram;
     }
 }

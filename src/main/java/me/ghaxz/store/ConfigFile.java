@@ -1,5 +1,7 @@
 package me.ghaxz.store;
 
+import me.ghaxz.interfaces.ArgParser;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,9 +14,13 @@ public class ConfigFile {
     private static final Path configPath = Paths.get("./config.properties");
     private final Properties properties = new Properties();
 
-    public static ConfigFile getConfig() throws IOException {
+    public static ConfigFile getConfig() {
         if(instance == null) {
-            instance = new ConfigFile();
+            try {
+                instance = new ConfigFile();
+            } catch (IOException e) {
+                ArgParser.exitWithErrorMessage("Failed loading config file: " + e);
+            }
         }
 
         return instance;

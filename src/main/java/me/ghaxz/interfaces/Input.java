@@ -12,4 +12,8 @@ public class Input {
     public static String sanatizeString(String str) {
         return str.trim();
     }
+
+    public static String capitalizeString(String str) {
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
 }

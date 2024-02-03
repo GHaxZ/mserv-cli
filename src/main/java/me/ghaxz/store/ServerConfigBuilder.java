@@ -1,32 +1,28 @@
 package me.ghaxz.store;
 
-import me.ghaxz.interfaces.ArgParser;
+public class ServerConfigBuilder {
+    private final ServerConfig config;
 
-import java.io.IOException;
-import java.io.Serializable;
-
-public class ServerConfigBuilder implements Serializable{
-    private ServerConfig config;
-
-    public ServerConfigBuilder(String configName) {
-        try {
-            config = new ServerConfig(configName);
-        } catch (IOException e) {
-            ArgParser.exitWithErrorMessage("Failed to load config file.");
-        }
+    public ServerConfigBuilder() {
+        config = new ServerConfig();
     }
 
-    public ServerConfigBuilder addStorageDirectory(String storageDirectory) {
+    public ServerConfigBuilder setConfigName(String configName) {
+        config.setConfigName(configName);
+        return this;
+    }
+
+    public ServerConfigBuilder setStorageDirectory(String storageDirectory) {
         config.setStorageDirectory(storageDirectory);
         return this;
     }
 
-    public ServerConfigBuilder addType(String type) {
+    public ServerConfigBuilder setType(JarType type) {
         config.setType(type);
         return this;
     }
 
-    public ServerConfigBuilder addVersion(String version) {
+    public ServerConfigBuilder setVersion(String version) {
         config.setVersion(version);
         return this;
     }
