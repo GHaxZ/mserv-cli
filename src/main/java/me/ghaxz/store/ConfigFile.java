@@ -8,6 +8,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+/*
+Handles the config file data saving and loading logic. Also gets save config properties.
+ */
 public class ConfigFile {
     private static ConfigFile instance = null;
 

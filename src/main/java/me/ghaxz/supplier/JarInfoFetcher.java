@@ -1,8 +1,12 @@
 package me.ghaxz.supplier;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import me.ghaxz.interfaces.ArgParser;
 import me.ghaxz.store.JarType;
+import me.ghaxz.store.JarVersion;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,17 +16,42 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-// Fetches jar types, versions, etc.
+/*
+Fetches all sorts of information about jars from the API (https://serverjars.com/)
+ */
 public class JarInfoFetcher {
     private static final Gson gson = new Gson();
 
     public static JsonObject fetchAllJarTypes() throws IOException {
-        URL url;
+        return fetchFromLink("https://serverjars.com/api/fetchTypes/");
+    }
+
+    public static ArrayList<JarVersion> fetchAllJarTypeVersions(JarType type) throws IOException {
+        ArrayList<JarVersion> jarVersions = new ArrayList<>();
+
+        JsonArray jsonResponse = fetchFromLink("https://serverjars.com/api/fetchAll/" + type.getApiURL()).getAsJsonArray("response");
+
+        for (JsonElement element : jsonResponse) {
+            JsonObject object = element.getAsJsonObject();
+
+            jarVersions.add(new JarVersion(
+                    object.get("version").getAsString(),
+                    object.getAsJsonObject("size").get("display").getAsString(),
+                    object.get("file").getAsString()
+                    ));
+
+        }
+
+        return jarVersions;
+    }
+
+    private static JsonObject fetchFromLink(String apiURL) throws IOException {
+        URL url = null;
 
         try {
-            url = new URL("https://serverjars.com/api/fetchTypes/");
-        } catch(MalformedURLException e) {
-            return null;
+            url = new URL(apiURL);
+        } catch (MalformedURLException e) {
+            ArgParser.exitWithErrorMessage("The API url is malformed, either the API is not responding, or this is an internal error. Please report it.");
         }
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -33,18 +62,11 @@ public class JarInfoFetcher {
         StringBuilder responseBuilder = new StringBuilder();
 
         String line;
-        while((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             responseBuilder.append(line);
         }
 
-        String response = responseBuilder.toString();
-
-        return stringToJSON(response);
-    }
-
-    // todo fetch versions for specific JarType
-    public ArrayList<String> fetchAllJarTypeVersions(JarType type) {
-        return null;
+        return stringToJSON(responseBuilder.toString());
     }
 
     private static JsonObject stringToJSON(String str) {

@@ -1,6 +1,11 @@
 package me.ghaxz.store;
 
-// zb type = bedrock, modded, proxies, servers, vanilla --- name = vanilla, snapshot, paper, fabric, etc.
+import java.util.Objects;
+
+/*
+Stores specific jar typ by category (modded, proxies, software, vanilla), name (fabric, paper, bungeecord, vanilla)
+and their respective api endpoint and unique identifier url ex. modded/fabric
+ */
 public final class JarType {
     private final String category;
     private final String name;
@@ -16,20 +21,28 @@ public final class JarType {
         return category;
     }
 
-    @Override
-    public String toString() {
-        return "JarType{" +
-                "type='" + category + '\'' +
-                ", name='" + name + '\'' +
-                ", apiURL='" + apiURL + '\'' +
-                '}';
-    }
-
     public String getName() {
         return name;
     }
 
     public String getApiURL() {
         return apiURL;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JarType jarType = (JarType) o;
+        return Objects.equals(apiURL, jarType.apiURL);
+    }
+
+    @Override
+    public String toString() {
+        return "JarType{" +
+                "category='" + category + '\'' +
+                ", name='" + name + '\'' +
+                ", apiURL='" + apiURL + '\'' +
+                '}';
     }
 }

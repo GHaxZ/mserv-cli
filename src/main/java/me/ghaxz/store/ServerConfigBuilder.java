@@ -1,5 +1,8 @@
 package me.ghaxz.store;
 
+/*
+Allows for a ServerConfig to be built step by step and overriding default values
+ */
 public class ServerConfigBuilder {
     private final ServerConfig config;
 
@@ -22,8 +25,13 @@ public class ServerConfigBuilder {
         return this;
     }
 
-    public ServerConfigBuilder setVersion(String version) {
+    public ServerConfigBuilder setVersion(JarVersion version) {
         config.setVersion(version);
+        return this;
+    }
+
+    public ServerConfigBuilder setRAM(long ram) {
+        config.setRam(ram);
         return this;
     }
 

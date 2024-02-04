@@ -9,15 +9,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+/*
+Manages and stores all JarTypes for easy access and information gathering
+ */
 public class JarTypeManager {
-    /*
-    Fetch all types ("type") and names ("category") from serverjars api and store them in JarType Object
-     */
     private static JarTypeManager instance = null;
-    private final ArrayList<JarType> jars;
+    private final ArrayList<JarType> jarTypes;
 
     private JarTypeManager() throws IOException {
-        jars = new ArrayList<>();
+        jarTypes = new ArrayList<>();
         getAllTypes();
     }
 
@@ -26,7 +26,7 @@ public class JarTypeManager {
 
         for(Map.Entry<String, JsonElement> category : jsonResponse.entrySet()) {
             for(JsonElement name : category.getValue().getAsJsonArray()) {
-                jars.add(new JarType(category.getKey(), name.getAsString()));
+                jarTypes.add(new JarType(category.getKey(), name.getAsString()));
             }
         }
     }
@@ -44,12 +44,12 @@ public class JarTypeManager {
         return instance;
     }
 
-    public ArrayList<JarType> getJars() {
-        return jars;
+    public ArrayList<JarType> getJarTypes() {
+        return jarTypes;
     }
 
     public JarType getJarTypeByName(String name) {
-        for(JarType jar : jars) {
+        for(JarType jar : jarTypes) {
             if(jar.getName().equals(name)) {
                 return jar;
             }

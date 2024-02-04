@@ -7,9 +7,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+/*
+Parses command line arguments and executes corresponding code
+ */
+
 public class ArgParser {
     public static void parseArgs(ArrayList<String> args) {
         if (!ConfigFile.exists()) {
+            System.out.println("First time startup, entering configuration mode.");
+
             Interface.getInterface().setupInterface();
         }
 
@@ -21,6 +27,7 @@ public class ArgParser {
 
         if (args.isEmpty()) {
             // todo implement help text
+            return;
         }
 
         switch (args.get(1)) {

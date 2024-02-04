@@ -1,16 +1,18 @@
 package me.ghaxz.store;
 
-// Add RAM size
 
+import me.ghaxz.interfaces.ArgParser;
+
+/*
+Stores information about a configured server instance, that gets serialized for storing server instance configuration details
+ */
 public class ServerConfig {
     private String configName;
-
-
-
     private String storageDirectory;
-    private JarType type; // vanilla (vanilla, snapshot, ...), servers (paper, spigot, ...), modded (fabric, forge, ...), proxies (Waterfall, Bungeecord, ...)
-    private String version;
-    private int ram;
+    private JarType type;
+    private JarVersion version;
+    private long ram;
+
 
     // default values
     public ServerConfig() {
@@ -20,10 +22,13 @@ public class ServerConfig {
 
         type = JarTypeManager.getInstance().getJarTypeByName("vanilla");
 
-        // If empty, api returns latest
-        version = "";
+        version = JarVersionManager.getManager(type).getNewestVersion();
 
-        // 2G ram is default
+        if(version == null) {
+            ArgParser.exitWithErrorMessage("Failed fetching newest available jar version from API.");
+        }
+
+        // 2GB ram is default
         ram = 2048;
     }
 
@@ -39,11 +44,11 @@ public class ServerConfig {
         this.type = type;
     }
 
-    public void setRam(int ram) {
+    public void setRam(long ram) {
         this.ram = ram;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(JarVersion version) {
         this.version = version;
     }
 
@@ -59,11 +64,22 @@ public class ServerConfig {
         return type;
     }
 
-    public String getVersion() {
+    @Override
+    public String toString() {
+        return "ServerConfig{" +
+                "configName='" + configName + '\'' +
+                ", storageDirectory='" + storageDirectory + '\'' +
+                ", type=" + type +
+                ", version=" + version +
+                ", ram=" + ram +
+                '}';
+    }
+
+    public JarVersion getVersion() {
         return version;
     }
 
-    public int getRam() {
+    public long getRam() {
         return ram;
     }
 }

@@ -1,13 +1,18 @@
 package me.ghaxz.interfaces;
 
-import me.ghaxz.store.ConfigFile;
-import me.ghaxz.store.JarType;
-import me.ghaxz.store.JarTypeManager;
-import me.ghaxz.store.ServerConfigBuilder;
+import com.sun.management.OperatingSystemMXBean;
+import me.ghaxz.store.*;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Optional;
+
+/*
+Handles all the user interaction
+ */
 
 public class Interface {
     private static Interface instance = null;
@@ -25,10 +30,8 @@ public class Interface {
     }
 
     public void setupInterface() {
-        System.out.println("First time startup, entering configuration mode.");
-
         while(true) {
-            System.out.print("\nPlease specify the path, where you want to save your server instances by default: ");
+            System.out.print("\nSpecify default save directory for server instances: ");
 
             String dir = Input.readString();
 
@@ -58,7 +61,7 @@ public class Interface {
 
 
         while(true) {
-            System.out.print("\nGive your server Instance a name: ");
+            System.out.print("\nEnter server instance name: ");
 
             String name = Input.sanatizeString(Input.readString());
 
@@ -78,7 +81,7 @@ public class Interface {
             if(dirRequired) {
                 System.out.println("\nNo default directory configured in config file, directory is required.");
 
-                System.out.print("\nPlease specify the path, where you want to save your server instance: ");
+                System.out.print("\nSpecify save directory for server instance: ");
 
                 String dir = Input.sanatizeString(Input.readString());
 
@@ -91,7 +94,7 @@ public class Interface {
                     }
                 }
             } else {
-                System.out.print("\nPlease specify the path, where you want to save your server instance" +
+                System.out.print("\nSpecify save directory for server instance" +
                         ", leave blank for default (" + configFile.getDefaultDirectory() + "): ");
 
                 String dir = Input.sanatizeString(Input.readString());
@@ -116,7 +119,7 @@ public class Interface {
 
             System.out.print("\nAvailable software:");
 
-            for(JarType jar : JarTypeManager.getInstance().getJars()) {
+            for(JarType jar : JarTypeManager.getInstance().getJarTypes()) {
                 if(currectCategory.equals(jar.getCategory())) {
                     System.out.print(", " + Input.capitalizeString(jar.getName()));
                 } else {
@@ -128,7 +131,7 @@ public class Interface {
                 }
             }
 
-            System.out.print("\n\nPlease specify the server software, leave blank for default (vanilla): ");
+            System.out.print("\n\nSpecify server software, leave blank for default (vanilla): ");
 
             String software = Input.sanatizeString(Input.readString());
 
@@ -146,6 +149,72 @@ public class Interface {
             }
         }
 
-        // todo version selection, ram specification
+        while(true) {
+            System.out.println("\n-- Configure server version --");
+
+            System.out.println("\nAvailable versions for " + Input.capitalizeString(builder.getConfig().getType().getName()) + ": \n");
+
+            JarVersionManager versionManager = JarVersionManager.getManager(builder.getConfig().getType());
+
+            for(JarVersion version : versionManager.getAllVersions()) {
+                System.out.println(version.getVersion() + " - " + version.getSize());
+            }
+
+            System.out.print("\nSpecify server version, leave blank for default (" +
+                    versionManager.getNewestVersion().getVersion() + " - newest): "
+            );
+
+            String version = Input.sanatizeString(Input.readString());
+
+            if(version.isBlank()) {
+                break;
+            } else {
+                JarVersion jarVersion = versionManager.getJarVersionByVersionName(version);
+
+                if(jarVersion != null) {
+                    builder.setVersion(versionManager.getJarVersionByVersionName(version));
+                    break;
+                } else {
+                    System.out.println("\nThis is not an available version.");
+                }
+            }
+        }
+
+        while(true) {
+            System.out.println("\n-- Configure server RAM --");
+
+            System.out.println("\nMake sure to choose a sensible amount of RAM.\n" +
+                    "Generally, you shouldn't use more than half of your RAM, if you're also playing on this system.");
+
+            long ramSize = ((OperatingSystemMXBean) ManagementFactory
+                    .getOperatingSystemMXBean()).getTotalMemorySize();
+
+            System.out.println("\nSystem RAM size: " + ramSize / 1_000_000 + "MB");
+
+            System.out.print("Specify RAM amount in MB, leave blank for default (2048MB): ");
+
+            String ram = Input.sanatizeString(Input.readString());
+
+            if(ram.isBlank()) {
+                break;
+            } else {
+                try {
+                    long ramLong = Long.parseLong(ram);
+
+                    if(ramLong < 1) {
+                        System.out.println("\nThe RAM amount needs to be more than 0MB.");
+                    } else if (ramLong > ramSize / 1_000_000) {
+                        System.out.println("\n" + ramLong + "MB is larger than the systems RAM size.");
+                    } else {
+                        builder.setRAM(ramLong);
+                        break;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("\nThis is not a valid RAM value.");
+                }
+            }
+        }
+
+        System.out.println(builder.getConfig());
     }
 }

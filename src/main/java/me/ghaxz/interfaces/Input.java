@@ -1,7 +1,11 @@
 package me.ghaxz.interfaces;
 
+import java.util.Optional;
 import java.util.Scanner;
 
+/*
+Helper class for user input
+ */
 public class Input {
     private static final Scanner sc = new Scanner(System.in);
 
