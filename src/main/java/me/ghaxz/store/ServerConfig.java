@@ -13,20 +13,15 @@ public class ServerConfig {
     private JarVersion version;
     private long ram;
 
-
     // default values
     public ServerConfig() {
         this.configName = null;
 
-        storageDirectory = ConfigFile.getConfig().getDefaultDirectory();
+        storageDirectory = null;
 
-        type = JarTypeManager.getInstance().getJarTypeByName("vanilla");
+        type = null;
 
-        version = JarVersionManager.getManager(type).getNewestVersion();
-
-        if(version == null) {
-            ArgParser.exitWithErrorMessage("Failed fetching newest available jar version from API.");
-        }
+        version = null;
 
         // 2GB ram is default
         ram = 2048;

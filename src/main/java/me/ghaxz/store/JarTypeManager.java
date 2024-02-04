@@ -31,14 +31,9 @@ public class JarTypeManager {
         }
     }
 
-    public static JarTypeManager getInstance() {
+    public static JarTypeManager getInstance() throws IOException {
         if(instance == null) {
-            try {
-                instance = new JarTypeManager();
-            } catch (IOException e) {
-                ArgParser.exitWithErrorMessage("Failed fetching available jar types from api: " + e);
-            }
-
+            instance = new JarTypeManager();
         }
 
         return instance;

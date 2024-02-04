@@ -46,13 +46,7 @@ public class JarInfoFetcher {
     }
 
     private static JsonObject fetchFromLink(String apiURL) throws IOException {
-        URL url = null;
-
-        try {
-            url = new URL(apiURL);
-        } catch (MalformedURLException e) {
-            ArgParser.exitWithErrorMessage("The API url is malformed, either the API is not responding, or this is an internal error. Please report it.");
-        }
+        URL url = new URL(apiURL);
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");

@@ -2,12 +2,15 @@ package me.ghaxz.interfaces;
 
 import com.sun.management.OperatingSystemMXBean;
 import me.ghaxz.store.*;
+import me.ghaxz.supplier.JarDownloader;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 
 /*
@@ -100,6 +103,7 @@ public class Interface {
                 String dir = Input.sanatizeString(Input.readString());
 
                 if(dir.isBlank()) {
+                    builder.setStorageDirectory(ConfigFile.getConfig().getDefaultDirectory());
                     break;
                 } else {
                     if(Files.isDirectory(Paths.get(dir))) {
@@ -119,7 +123,15 @@ public class Interface {
 
             System.out.print("\nAvailable software:");
 
-            for(JarType jar : JarTypeManager.getInstance().getJarTypes()) {
+            JarTypeManager jarTypeManager = null;
+
+            try {
+                jarTypeManager = JarTypeManager.getInstance();
+            } catch (IOException e) {
+                ArgParser.exitWithErrorMessage("\nFailed fetching available jar types from API: " + e);
+            }
+
+            for(JarType jar : jarTypeManager.getJarTypes()) {
                 if(currectCategory.equals(jar.getCategory())) {
                     System.out.print(", " + Input.capitalizeString(jar.getName()));
                 } else {
@@ -136,9 +148,10 @@ public class Interface {
             String software = Input.sanatizeString(Input.readString());
 
             if(software.isBlank()) {
+                builder.setType(jarTypeManager.getJarTypeByName("vanilla"));
                 break;
             } else {
-                JarType type = JarTypeManager.getInstance().getJarTypeByName(software.toLowerCase());
+                JarType type = jarTypeManager.getJarTypeByName(software.toLowerCase());
 
                 if(type != null) {
                     builder.setType(type);
@@ -154,7 +167,14 @@ public class Interface {
 
             System.out.println("\nAvailable versions for " + Input.capitalizeString(builder.getConfig().getType().getName()) + ": \n");
 
-            JarVersionManager versionManager = JarVersionManager.getManager(builder.getConfig().getType());
+            JarVersionManager versionManager = null;
+
+            try {
+                versionManager = JarVersionManager.getManager(builder.getConfig().getType());
+            } catch (IOException e) {
+                ArgParser.exitWithErrorMessage("\nFailed fetching available versions from API: " + e);
+            }
+
 
             for(JarVersion version : versionManager.getAllVersions()) {
                 System.out.println(version.getVersion() + " - " + version.getSize());
@@ -167,6 +187,7 @@ public class Interface {
             String version = Input.sanatizeString(Input.readString());
 
             if(version.isBlank()) {
+                builder.setVersion(versionManager.getNewestVersion());
                 break;
             } else {
                 JarVersion jarVersion = versionManager.getJarVersionByVersionName(version);
@@ -215,6 +236,11 @@ public class Interface {
             }
         }
 
-        System.out.println(builder.getConfig());
+        try {
+            JarDownloader.downloadServerConfig(builder.getConfig());
+        } catch (IOException e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
+
+        }
     }
 }

@@ -22,13 +22,9 @@ public class JarVersionManager {
         jarVersions = JarInfoFetcher.fetchAllJarTypeVersions(jarType);
     }
 
-    public static JarVersionManager getManager(JarType type) {
+    public static JarVersionManager getManager(JarType type) throws IOException {
         if(managers.stream().noneMatch(manager -> manager.getJarType().equals(type))) {
-            try {
-                managers.add(new JarVersionManager(type));
-            } catch (IOException e) {
-                ArgParser.exitWithErrorMessage("Failed fetching available jar versions from API: " + e);
-            }
+            managers.add(new JarVersionManager(type));
         }
 
         return managers.stream().filter(jarVersionManager -> jarVersionManager.getJarType().equals(type)).findFirst().get();
