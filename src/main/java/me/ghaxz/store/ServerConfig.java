@@ -1,8 +1,6 @@
 package me.ghaxz.store;
 
 
-import me.ghaxz.interfaces.ArgParser;
-
 /*
 Stores information about a configured server instance, that gets serialized for storing server instance configuration details
  */
@@ -23,8 +21,7 @@ public class ServerConfig {
 
         version = null;
 
-        // 2GB ram is default
-        ram = 2048;
+        ram = 0;
     }
 
     public void setConfigName(String configName) {

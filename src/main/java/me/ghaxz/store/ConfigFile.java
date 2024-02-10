@@ -1,6 +1,6 @@
 package me.ghaxz.store;
 
-import me.ghaxz.interfaces.ArgParser;
+import me.ghaxz.cli.ArgParser;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,7 +14,7 @@ Handles the config file data saving and loading logic. Also gets save config pro
 public class ConfigFile {
     private static ConfigFile instance = null;
 
-    private static final Path configPath = Paths.get("./config.properties");
+    private static final Path configPath = Paths.get("./mserv.conf");
     private final Properties properties = new Properties();
 
     public static ConfigFile getConfig() {
@@ -46,7 +46,9 @@ public class ConfigFile {
     }
 
     public String getDefaultDirectory() {
-        return properties.getProperty("defaultDirectory");
+        String dir = properties.getProperty("defaultDirectory");
+
+        return Files.isDirectory(Paths.get(dir)) ? dir : null;
     }
 
     public static boolean exists() {

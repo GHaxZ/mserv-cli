@@ -1,6 +1,5 @@
 package me.ghaxz.store;
 
-import me.ghaxz.interfaces.ArgParser;
 import me.ghaxz.supplier.JarInfoFetcher;
 
 import java.io.IOException;

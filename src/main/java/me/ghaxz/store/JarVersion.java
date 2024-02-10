@@ -5,21 +5,21 @@ Stores a specific jar version by version (1.20.4, 1.8.9), size (46.57MB) and jar
  */
 public class JarVersion {
     private final String version;
-    private final String size;
+    private final long byteSize;
     private final String jarFilename;
 
-    public JarVersion(String version, String size, String jarFilename) {
+    public JarVersion(String version, long byteSize, String jarFilename) {
         this.version = version;
-        this.size = size;
         this.jarFilename = jarFilename;
-    }
-
-    public String getSize() {
-        return size;
+        this.byteSize = byteSize;
     }
 
     public String getVersion() {
         return version;
+    }
+
+    public long getByteSize() {
+        return byteSize;
     }
 
     public String getJarFilename() {
@@ -30,7 +30,7 @@ public class JarVersion {
     public String toString() {
         return "JarVersion{" +
                 "version='" + version + '\'' +
-                ", size='" + size + '\'' +
+                ", size='" + byteSize + '\'' +
                 ", jarFilename='" + jarFilename + '\'' +
                 '}';
     }

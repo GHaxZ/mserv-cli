@@ -2,7 +2,6 @@ package me.ghaxz.store;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.ghaxz.interfaces.ArgParser;
 import me.ghaxz.supplier.JarInfoFetcher;
 
 import java.io.IOException;

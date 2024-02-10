@@ -1,23 +1,23 @@
-package me.ghaxz.interfaces;
+package me.ghaxz.cli;
 
 import com.sun.management.OperatingSystemMXBean;
+import me.ghaxz.notification.NotificationEvent;
+import me.ghaxz.notification.NotificationSubscriber;
+import me.ghaxz.notification.NotificationType;
+import me.ghaxz.server.InstanceCreator;
+import me.ghaxz.server.InstanceRunner;
 import me.ghaxz.store.*;
-import me.ghaxz.supplier.JarDownloader;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
 
 /*
 Handles all the user interaction
  */
 
-public class Interface {
+public class Interface implements NotificationSubscriber {
     private static Interface instance = null;
 
     private Interface() {
@@ -54,7 +54,7 @@ public class Interface {
     }
 
     // Guided server configuration process (fetching all data, display it, read selection, if no default dir require dir specification, RAM size)
-    // No script for startup required, all managed in program (run "java -jar NAME RAM_SIZE" from tool)
+    // No script for startup required, all managed in program (run "java -XmS[RAM_SIZE] -Xmx[RAM_SIZE] -jar [JAR_NAME]" from tool)
     public void configureInterface() {
         System.out.println("Initializing ...");
         ServerConfigBuilder builder = new ServerConfigBuilder();
@@ -82,7 +82,7 @@ public class Interface {
             boolean dirRequired = configFile.getDefaultDirectory() == null;
 
             if(dirRequired) {
-                System.out.println("\nNo default directory configured in config file, directory is required.");
+                System.out.println("\nNo valid default directory configured in config file, directory is required.");
 
                 System.out.print("\nSpecify save directory for server instance: ");
 
@@ -177,7 +177,7 @@ public class Interface {
 
 
             for(JarVersion version : versionManager.getAllVersions()) {
-                System.out.println(version.getVersion() + " - " + version.getSize());
+                System.out.println(version.getVersion() + " - " + version.getByteSize() / 1_000_000);
             }
 
             System.out.print("\nSpecify server version, leave blank for default (" +
@@ -217,6 +217,7 @@ public class Interface {
             String ram = Input.sanatizeString(Input.readString());
 
             if(ram.isBlank()) {
+                builder.setRAM(2048);
                 break;
             } else {
                 try {
@@ -236,11 +237,34 @@ public class Interface {
             }
         }
 
+        System.out.println("-- Running server instance setup --");
         try {
-            JarDownloader.downloadServerConfig(builder.getConfig());
-        } catch (IOException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
+            InstanceCreator creator = new InstanceCreator(builder.getConfig());
 
+            subscribe(creator);
+
+            creator.setUpInstance();
+
+            unsubscribe(creator);
+        } catch (IOException e) {
+            ArgParser.exitWithErrorMessage("Failed creating server instance: " + e);
+        }
+    }
+
+    @Override
+    public void onNotification(NotificationEvent event) {
+        switch (event.getType()) {
+            case INFO -> {
+                System.out.print("\n" + event.getMessage());
+            }
+
+            case COMPLETED -> {
+                System.out.println("\n" + event.getMessage());
+            }
+
+            case PROGRESS -> {
+                System.out.print("\r" + event.getMessage());
+            }
         }
     }
 }

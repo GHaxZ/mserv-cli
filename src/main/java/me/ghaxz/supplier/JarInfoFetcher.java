@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.ghaxz.interfaces.ArgParser;
 import me.ghaxz.store.JarType;
 import me.ghaxz.store.JarVersion;
 
@@ -12,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -36,7 +34,7 @@ public class JarInfoFetcher {
 
             jarVersions.add(new JarVersion(
                     object.get("version").getAsString(),
-                    object.getAsJsonObject("size").get("display").getAsString(),
+                    object.getAsJsonObject("size").get("bytes").getAsLong(),
                     object.get("file").getAsString()
                     ));
 

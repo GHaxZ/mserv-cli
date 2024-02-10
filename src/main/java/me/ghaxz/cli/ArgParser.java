@@ -1,6 +1,9 @@
-package me.ghaxz.interfaces;
+package me.ghaxz.cli;
 
 import com.sun.management.OperatingSystemMXBean;
+import me.ghaxz.notification.NotificationEvent;
+import me.ghaxz.notification.NotificationSubscriber;
+import me.ghaxz.server.InstanceCreator;
 import me.ghaxz.store.*;
 
 import java.io.IOException;
@@ -13,8 +16,10 @@ import java.util.ArrayList;
 Parses command line arguments and executes corresponding code
  */
 
-public class ArgParser {
-    public static void parseArgs(ArrayList<String> args) {
+// todo implement default values
+
+public class ArgParser implements NotificationSubscriber {
+    public void parseArgs(ArrayList<String> args) {
         if (!ConfigFile.exists()) {
             System.out.println("First time startup, entering configuration mode.");
 
@@ -53,7 +58,7 @@ public class ArgParser {
         }
     }
 
-    private static void parseNewArgument(ArrayList<String> args) {
+    private void parseNewArgument(ArrayList<String> args) {
         ServerConfigBuilder builder = new ServerConfigBuilder();
 
         if (args.size() > 1) {
@@ -83,12 +88,7 @@ public class ArgParser {
                 String defaultDir = ConfigFile.getConfig().getDefaultDirectory();
 
                 if (defaultDir == null) {
-                    exitWithErrorMessage("Couldn't read default directory from config file.\n" +
-                            "Use the --dir argument to specify one manually, or configure the default directory.");
-                }
-
-                if (defaultDir != null && defaultDir.isBlank()) {
-                    exitWithErrorMessage("Couldn't read default directory from config file.\n" +
+                    exitWithErrorMessage("Couldn't read a valid default directory from config file.\n" +
                             "Use the --dir argument to specify one manually, or configure the default directory.");
                 }
             }
@@ -174,12 +174,18 @@ public class ArgParser {
                 }
             }
 
-            ServerConfig config = builder.getConfig();
+            System.out.print("Initializing instance setup");
+            try {
+                InstanceCreator creator = new InstanceCreator(builder.getConfig());
 
-            System.out.println(config);
+                subscribe(creator);
 
-            // todo create new server instance with this config
+                creator.setUpInstance();
 
+                subscribe(creator);
+            } catch (IOException e) {
+                ArgParser.exitWithErrorMessage("Failed creating server instance: " + e);
+            }
         } else {
             Interface.getInterface().configureInterface();
         }
@@ -188,5 +194,10 @@ public class ArgParser {
     public static void exitWithErrorMessage(String msg) {
         System.err.println(msg);
         System.exit(1);
+    }
+
+    @Override
+    public void onNotification(NotificationEvent event) {
+        System.out.printf("\r%s", event.getMessage());
     }
 }
