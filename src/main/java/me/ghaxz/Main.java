@@ -1,11 +1,17 @@
 package me.ghaxz;
 
+import me.ghaxz.cli.ArgParser;
 import me.ghaxz.cli.Interface;
+import me.ghaxz.store.ConfigFile;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        Interface.getInterface().configureInterface();
+        // Interface.getInterface().configureInterface();
 
-        // new ArgParser().parseArgs(new ArrayList<>(List.of(args)));
+        new ArgParser().parseArgs(new ArrayList<>(List.of(args)));
     }
 }

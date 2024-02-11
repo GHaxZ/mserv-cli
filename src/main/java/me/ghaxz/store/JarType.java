@@ -8,12 +8,12 @@ and their respective api endpoint and unique identifier url ex. modded/fabric
  */
 public final class JarType {
     private final String category;
-    private final String name;
-    private final String apiURL;
+    private final String software;
+    private transient final String apiURL;
 
     public JarType(String category, String name) {
         this.category = category;
-        this.name = name;
+        this.software = name;
         this.apiURL = category + "/" + name;
     }
 
@@ -21,8 +21,8 @@ public final class JarType {
         return category;
     }
 
-    public String getName() {
-        return name;
+    public String getSoftware() {
+        return software;
     }
 
     public String getApiURL() {
@@ -41,7 +41,7 @@ public final class JarType {
     public String toString() {
         return "JarType{" +
                 "category='" + category + '\'' +
-                ", name='" + name + '\'' +
+                ", name='" + software + '\'' +
                 ", apiURL='" + apiURL + '\'' +
                 '}';
     }

@@ -44,7 +44,7 @@ public class JarTypeManager {
 
     public JarType getJarTypeByName(String name) {
         for(JarType jar : jarTypes) {
-            if(jar.getName().equals(name)) {
+            if(jar.getSoftware().equals(name)) {
                 return jar;
             }
         }

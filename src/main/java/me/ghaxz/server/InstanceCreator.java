@@ -5,6 +5,7 @@ import me.ghaxz.notification.NotificationPublisher;
 import me.ghaxz.notification.NotificationSubscriber;
 import me.ghaxz.notification.NotificationType;
 import me.ghaxz.store.ServerConfig;
+import me.ghaxz.store.ServerInstanceManager;
 import me.ghaxz.supplier.JarDownloader;
 
 import java.io.IOException;
@@ -20,30 +21,32 @@ public class InstanceCreator implements NotificationSubscriber, NotificationPubl
     }
 
     public void setUpInstance() throws IOException {
-        String dir = config.getStorageDirectory() +
-                FileSystems.getDefault().getSeparator() +
-                config.getConfigName();
 
-        String fileOutputDir = dir +
-                FileSystems.getDefault().getSeparator() +
-                config.getVersion().getJarFilename();
+        saveConfiguration(config);
+        createDirectory(config);
+        downloadJar(config);
+        createEula(config);
 
-        JarDownloader downloader = new JarDownloader(config, fileOutputDir);
-
-        createDirectory(dir);
-        downloadJar(downloader);
-        createEula(dir);
+        notify("Finished server instance setup!", NotificationType.COMPLETED);
     }
 
-    private void createDirectory(String directory) throws IOException {
+    private void saveConfiguration(ServerConfig config) {
+        notify("Saving server configuration ...", NotificationType.INFO);
+        ServerInstanceManager.getInstance().addInstance(config);
+        notify("Saved server configuration", NotificationType.COMPLETED);
+    }
+
+    private void createDirectory(ServerConfig config) throws IOException {
         notify("Creating directory ...", NotificationType.INFO);
 
-        Files.createDirectory(Paths.get(directory));
+        Files.createDirectory(Paths.get(config.getAbsoluteStoragePath()));
 
         notify("Created directory", NotificationType.COMPLETED);
     }
 
-    private void downloadJar(JarDownloader downloader) throws IOException {
+    private void downloadJar(ServerConfig config) throws IOException {
+        JarDownloader downloader = new JarDownloader(config, config.getJarStoragePath());
+
         notify("Downloading jar ...\n", NotificationType.INFO);
 
         subscribe(downloader);
@@ -53,9 +56,9 @@ public class InstanceCreator implements NotificationSubscriber, NotificationPubl
         notify("Downloaded jar", NotificationType.COMPLETED);
     }
 
-    private void createEula(String dir) throws IOException {
+    private void createEula(ServerConfig config) throws IOException {
         notify("Creating eula.txt ...", NotificationType.INFO);
-        Files.writeString(Paths.get(dir + FileSystems.getDefault().getSeparator() + "eula.txt"), "eula=true");
+        Files.writeString(Paths.get(config.getAbsoluteStoragePath() + FileSystems.getDefault().getSeparator() + "eula.txt"), "eula=true");
         notify("Created eula.txt", NotificationType.COMPLETED);
     }
 

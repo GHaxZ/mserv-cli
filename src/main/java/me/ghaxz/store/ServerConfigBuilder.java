@@ -1,5 +1,7 @@
 package me.ghaxz.store;
 
+import java.nio.file.FileSystems;
+
 /*
 Allows for a ServerConfig to be built step by step and overriding default values
  */
@@ -10,13 +12,17 @@ public class ServerConfigBuilder {
         config = new ServerConfig();
     }
 
+    public ServerConfig getConfig() {
+        return config;
+    }
+
     public ServerConfigBuilder setConfigName(String configName) {
         config.setConfigName(configName);
         return this;
     }
 
     public ServerConfigBuilder setStorageDirectory(String storageDirectory) {
-        config.setStorageDirectory(storageDirectory);
+        config.setStoragePath(storageDirectory);
         return this;
     }
 
@@ -31,11 +37,24 @@ public class ServerConfigBuilder {
     }
 
     public ServerConfigBuilder setRAM(long ram) {
-        config.setRam(ram);
+        config.setRamMB(ram);
         return this;
     }
 
-    public ServerConfig getConfig() {
+    public ServerConfig build() {
+        String configName = config.getConfigName();
+        String storageDirectory = config.getStoragePath();
+
+        if(configName != null && storageDirectory != null) {
+            config.setAbsoluteStoragePath(storageDirectory + FileSystems.getDefault().getSeparator() + configName);
+        }
+
+        if(config.getAbsoluteStoragePath() != null) {
+            config.setJarStoragePath(config.getAbsoluteStoragePath() +
+                    FileSystems.getDefault().getSeparator() +
+                    config.getVersion().getJarFilename());
+        }
+
         return config;
     }
 }

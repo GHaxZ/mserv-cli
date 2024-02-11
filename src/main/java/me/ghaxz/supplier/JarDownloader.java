@@ -13,8 +13,6 @@ import java.net.URL;
 Responsible for downloading jars from the API (https://serverjars.com/)
  */
 
-// todo maybe switch back to single threading
-
 public class JarDownloader implements NotificationPublisher {
     private final ServerConfig config;
     private final String dir;

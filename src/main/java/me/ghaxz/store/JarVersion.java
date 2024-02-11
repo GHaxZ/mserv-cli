@@ -5,7 +5,7 @@ Stores a specific jar version by version (1.20.4, 1.8.9), size (46.57MB) and jar
  */
 public class JarVersion {
     private final String version;
-    private final long byteSize;
+    private transient final long byteSize;
     private final String jarFilename;
 
     public JarVersion(String version, long byteSize, String jarFilename) {

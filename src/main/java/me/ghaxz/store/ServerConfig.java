@@ -6,38 +6,50 @@ Stores information about a configured server instance, that gets serialized for 
  */
 public class ServerConfig {
     private String configName;
-    private String storageDirectory;
+    private String storagePath;
+    private String absoluteStoragePath;
+    private String jarStoragePath;
     private JarType type;
     private JarVersion version;
-    private long ram;
+    private long ramMB;
 
     // default values
     public ServerConfig() {
         this.configName = null;
 
-        storageDirectory = null;
+        storagePath = null;
+
+        absoluteStoragePath = null;
 
         type = null;
 
         version = null;
 
-        ram = 0;
+        ramMB = 0;
     }
 
     public void setConfigName(String configName) {
         this.configName = configName;
     }
 
-    public void setStorageDirectory(String storageDirectory) {
-        this.storageDirectory = storageDirectory;
+    public void setStoragePath(String storagePath) {
+        this.storagePath = storagePath;
+    }
+
+    public void setAbsoluteStoragePath(String absoluteStoragePath) {
+        this.absoluteStoragePath = absoluteStoragePath;
+    }
+
+    public void setJarStoragePath(String jarStoragePath) {
+        this.jarStoragePath = jarStoragePath;
     }
 
     public void setType(JarType type) {
         this.type = type;
     }
 
-    public void setRam(long ram) {
-        this.ram = ram;
+    public void setRamMB(long ramMB) {
+        this.ramMB = ramMB;
     }
 
     public void setVersion(JarVersion version) {
@@ -48,30 +60,38 @@ public class ServerConfig {
         return configName;
     }
 
-    public String getStorageDirectory() {
-        return storageDirectory;
+    public String getStoragePath() {
+        return storagePath;
+    }
+
+    public String getAbsoluteStoragePath() {
+        return absoluteStoragePath;
+    }
+
+    public String getJarStoragePath() {
+        return jarStoragePath;
     }
 
     public JarType getType() {
         return type;
     }
 
-    @Override
-    public String toString() {
-        return "ServerConfig{" +
-                "configName='" + configName + '\'' +
-                ", storageDirectory='" + storageDirectory + '\'' +
-                ", type=" + type +
-                ", version=" + version +
-                ", ram=" + ram +
-                '}';
-    }
-
     public JarVersion getVersion() {
         return version;
     }
 
-    public long getRam() {
-        return ram;
+    public long getRamMB() {
+        return ramMB;
+    }
+
+    @Override
+    public String toString() {
+        return "ServerConfig{" +
+                "configName='" + configName + '\'' +
+                ", storageDirectory='" + storagePath + '\'' +
+                ", type=" + type +
+                ", version=" + version +
+                ", ram=" + ramMB +
+                '}';
     }
 }
