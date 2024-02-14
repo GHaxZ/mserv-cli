@@ -1,20 +1,18 @@
 package me.ghaxz.server;
 
-import me.ghaxz.cli.Input;
 import me.ghaxz.notification.NotificationPublisher;
-import me.ghaxz.notification.NotificationType;
 import me.ghaxz.store.ServerConfig;
-
 import java.io.*;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 public class InstanceRunner implements NotificationPublisher {
     public static void runInstance(ServerConfig instance) throws IOException {
         // Defines command and arguments
-        String[] command = new String[] {"java", "-Xmx4G", "-Xms4G", "-jar", "\"" + instance.getVersion().getJarFilename() + "\"", "--nogui"};
+        String[] command = new String[]
+                {"java",
+                "-Xmx" + instance.getRamMB() + "M",
+                "-Xms" + instance.getRamMB() + "M", "-jar",
+                "\"" + instance.getVersion().getJarFilename() + "\"",
+                "--nogui"};
         // Creates and runs the command turning it into a process
         Process process = new ProcessBuilder().command(command).directory(new File(instance.getAbsoluteStoragePath())).start();
 
