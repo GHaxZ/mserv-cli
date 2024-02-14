@@ -3,6 +3,7 @@ package me.ghaxz.cli;
 import com.sun.management.OperatingSystemMXBean;
 import me.ghaxz.notification.NotificationEvent;
 import me.ghaxz.notification.NotificationSubscriber;
+import me.ghaxz.server.InstanceRunner;
 import me.ghaxz.store.*;
 
 import java.io.IOException;
@@ -42,9 +43,7 @@ public class ArgParser implements NotificationSubscriber {
             case "list" -> parseListArgument(args);
 
 
-            case "start" -> {
-                // todo load server instance and start the server
-            }
+            case "start" -> parseStartArgument(args);
 
             case "edit" -> {
                 // todo edit server instance
@@ -193,12 +192,12 @@ public class ArgParser implements NotificationSubscriber {
     }
 
     private void parseDeleteArgument(ArrayList<String> args) {
-        if(args.size() > 1) {
+        if (args.size() > 1) {
             String instanceName = args.get(1);
 
-            if(ServerInstanceManager.getInstance().instanceNameExists(instanceName)) {
+            if (ServerInstanceManager.getInstance().instanceNameExists(instanceName)) {
                 ServerConfig instance = ServerInstanceManager.getInstance().getInstanceByName(instanceName);
-                if(args.contains("-y") && !instanceName.equalsIgnoreCase("-y")) {
+                if (args.contains("-y") && !instanceName.equalsIgnoreCase("-y")) {
                     try {
                         ServerInstanceManager.getInstance().deleteInstance(instance);
 
@@ -222,6 +221,28 @@ public class ArgParser implements NotificationSubscriber {
 
     private void parseListArgument(ArrayList<String> args) {
         Interface.getInterface().runList(args.contains("-d"));
+    }
+
+    private void parseStartArgument(ArrayList<String> args) {
+        if (args.size() > 1) {
+            String instanceName = args.get(1);
+
+            if (ServerInstanceManager.getInstance().instanceNameExists(instanceName)) {
+                ServerConfig instance = ServerInstanceManager.getInstance().getInstanceByName(instanceName);
+
+                try {
+                    InstanceRunner.runInstance(instance);
+                } catch (IOException e) {
+                    exitWithErrorMessage("Failed to start instance: " + e);
+                }
+
+            } else {
+                exitWithErrorMessage("No server instance found with name \"" + instanceName + "\".\nRun \"mserv list\" to see all instances.");
+            }
+
+        } else {
+            exitWithErrorMessage("Missing server instance name: start [INSTANCE_NAME]");
+        }
     }
 
     public static void exitWithErrorMessage(String msg) {
