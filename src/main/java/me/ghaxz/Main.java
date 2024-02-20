@@ -2,7 +2,7 @@ package me.ghaxz;
 
 import me.ghaxz.cli.ArgParser;
 import me.ghaxz.cli.Interface;
-import me.ghaxz.store.ConfigFile;
+import me.ghaxz.model.store.ConfigFile;
 
 import java.io.IOException;
 import java.util.ArrayList;

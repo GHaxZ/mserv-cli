@@ -1,4 +1,4 @@
-package me.ghaxz.store;
+package me.ghaxz.model.store;
 
 import java.nio.file.FileSystems;
 

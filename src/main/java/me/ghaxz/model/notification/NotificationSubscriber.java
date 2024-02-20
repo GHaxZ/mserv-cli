@@ -1,4 +1,4 @@
-package me.ghaxz.notification;
+package me.ghaxz.model.notification;
 
 public interface NotificationSubscriber {
     default void subscribe(NotificationPublisher publisher) {

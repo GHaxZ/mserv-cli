@@ -1,12 +1,12 @@
-package me.ghaxz.server;
+package me.ghaxz.model.server;
 
-import me.ghaxz.notification.NotificationEvent;
-import me.ghaxz.notification.NotificationPublisher;
-import me.ghaxz.notification.NotificationSubscriber;
-import me.ghaxz.notification.NotificationType;
-import me.ghaxz.store.ServerConfig;
-import me.ghaxz.store.ServerInstanceManager;
-import me.ghaxz.supplier.JarDownloader;
+import me.ghaxz.model.notification.NotificationEvent;
+import me.ghaxz.model.notification.NotificationPublisher;
+import me.ghaxz.model.notification.NotificationSubscriber;
+import me.ghaxz.model.notification.NotificationType;
+import me.ghaxz.model.store.ServerConfig;
+import me.ghaxz.model.store.ServerInstanceManager;
+import me.ghaxz.model.supplier.JarDownloader;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;

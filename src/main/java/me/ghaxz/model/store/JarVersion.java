@@ -1,4 +1,4 @@
-package me.ghaxz.store;
+package me.ghaxz.model.store;
 
 /*
 Stores a specific jar version by version (1.20.4, 1.8.9), size (46.57MB) and jar filename (paper-1.20.4.jar)

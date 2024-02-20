@@ -1,11 +1,11 @@
-package me.ghaxz.supplier;
+package me.ghaxz.model.supplier;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.ghaxz.store.JarType;
-import me.ghaxz.store.JarVersion;
+import me.ghaxz.model.store.JarType;
+import me.ghaxz.model.store.JarVersion;
 
 import java.io.BufferedReader;
 import java.io.IOException;

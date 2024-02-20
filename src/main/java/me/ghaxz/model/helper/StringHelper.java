@@ -1,4 +1,4 @@
-package me.ghaxz.helper;
+package me.ghaxz.model.helper;
 
 public class StringHelper {
     public static String capitalizeString(String str) {

@@ -1,6 +1,6 @@
-package me.ghaxz.store;
+package me.ghaxz.model.store;
 
-import me.ghaxz.supplier.JarInfoFetcher;
+import me.ghaxz.model.supplier.JarInfoFetcher;
 
 import java.io.IOException;
 import java.util.ArrayList;

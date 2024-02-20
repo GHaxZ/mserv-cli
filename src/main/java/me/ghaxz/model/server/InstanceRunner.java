@@ -1,7 +1,7 @@
-package me.ghaxz.server;
+package me.ghaxz.model.server;
 
-import me.ghaxz.notification.NotificationPublisher;
-import me.ghaxz.store.ServerConfig;
+import me.ghaxz.model.notification.NotificationPublisher;
+import me.ghaxz.model.store.ServerConfig;
 import java.io.*;
 
 public class InstanceRunner implements NotificationPublisher {
