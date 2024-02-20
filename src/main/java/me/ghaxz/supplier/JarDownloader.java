@@ -1,8 +1,8 @@
-package me.ghaxz.model.supplier;
+package me.ghaxz.supplier;
 
-import me.ghaxz.model.notification.NotificationPublisher;
-import me.ghaxz.model.notification.NotificationType;
-import me.ghaxz.model.store.ServerConfig;
+import me.ghaxz.notification.NotificationPublisher;
+import me.ghaxz.notification.NotificationType;
+import me.ghaxz.store.ServerConfig;
 
 import java.io.*;
 import java.net.HttpURLConnection;

@@ -1,8 +1,8 @@
-package me.ghaxz.model.store;
+package me.ghaxz.store;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.ghaxz.model.supplier.JarInfoFetcher;
+import me.ghaxz.supplier.JarInfoFetcher;
 
 import java.io.IOException;
 import java.util.ArrayList;

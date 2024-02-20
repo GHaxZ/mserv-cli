@@ -1,4 +1,4 @@
-package me.ghaxz.model.notification;
+package me.ghaxz.notification;
 
 import java.util.ArrayList;
 

@@ -1,11 +1,11 @@
 package me.ghaxz.cli;
 
 import com.sun.management.OperatingSystemMXBean;
-import me.ghaxz.model.helper.StringHelper;
-import me.ghaxz.model.notification.NotificationEvent;
-import me.ghaxz.model.notification.NotificationSubscriber;
-import me.ghaxz.model.server.InstanceCreator;
-import me.ghaxz.model.store.*;
+import me.ghaxz.helper.StringHelper;
+import me.ghaxz.notification.NotificationEvent;
+import me.ghaxz.notification.NotificationSubscriber;
+import me.ghaxz.server.InstanceCreator;
+import me.ghaxz.store.*;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;

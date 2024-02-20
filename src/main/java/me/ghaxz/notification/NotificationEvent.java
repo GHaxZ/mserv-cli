@@ -1,4 +1,4 @@
-package me.ghaxz.model.notification;
+package me.ghaxz.notification;
 
 public class NotificationEvent {
     private final String message;
