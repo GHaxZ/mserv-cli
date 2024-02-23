@@ -12,6 +12,10 @@ public class ServerConfigBuilder {
         config = new ServerConfig();
     }
 
+    public ServerConfigBuilder(ServerConfig config) {
+        this.config = config;
+    }
+
     public ServerConfig getConfig() {
         return config;
     }

@@ -1,33 +1,31 @@
 package me.ghaxz.server;
 
 import me.ghaxz.notification.NotificationPublisher;
+import me.ghaxz.notification.NotificationType;
 import me.ghaxz.store.ServerConfig;
+
 import java.io.*;
 
 public class InstanceRunner implements NotificationPublisher {
-    public static void runInstance(ServerConfig instance) throws IOException {
-        // Defines command and arguments
+    public void runInstance(ServerConfig instance) throws IOException {
         String[] command = new String[]
-                {"java",
-                "-Xmx" + instance.getRamMB() + "M",
-                "-Xms" + instance.getRamMB() + "M", "-jar",
-                "\"" + instance.getVersion().getJarFilename() + "\"",
-                "--nogui"};
-        // Creates and runs the command turning it into a process
-        Process process = new ProcessBuilder().command(command).directory(new File(instance.getAbsoluteStoragePath())).start();
+                {
+                        "java",
+                        "-Xmx" + instance.getRamMB() + "M",
+                        "-Xms" + instance.getRamMB() + "M", "-jar",
+                        "\"" + instance.getVersion().getJarFilename() + "\"",
+                        "--nogui"
+                };
 
-        // Starts new Thread that reads and prints the server output
-        new Thread(() -> {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException("Failed reading server output: " + e);
-            }
-        }).start();
+        notify("Starting server instance \"" + instance.getConfigName() + "\"", NotificationType.INFO);
 
-        // todo add server command input functionality
+        Process process = new ProcessBuilder().command(command).directory(new File(instance.getAbsoluteStoragePath())).inheritIO().start();
+
+        try {
+            process.waitFor();
+            notify("Stopped server instance \"" + instance.getConfigName() + "\"", NotificationType.INFO);
+        } catch (InterruptedException e) {
+            notify("Server instance stopped unexpectedly with error: " + e, NotificationType.ERROR);
+        }
     }
 }

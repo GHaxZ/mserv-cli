@@ -1,6 +1,8 @@
 package me.ghaxz.store;
 
 
+import java.util.Objects;
+
 /*
 Stores information about a configured server instance, that gets serialized for storing server instance configuration details
  */

@@ -11,8 +11,10 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Optional;
 
 /*
 Manages and stores all server configurations and gets serialized,
@@ -48,6 +50,20 @@ public class ServerInstanceManager {
         instances.add(config);
 
         writeToSerialized();
+    }
+
+    public void updateInstance(ServerConfig newConfig) {
+        Optional<ServerConfig> instance = instances.stream().filter(conf -> conf.equals(newConfig)).findFirst();
+
+        if(instance.isPresent()) {
+            ServerConfig oldConfig = instance.get();
+
+            instances.set(instances.indexOf(oldConfig), newConfig);
+
+            // todo update storage path and directory name if necessary
+
+            writeToSerialized();
+        }
     }
 
     public void deleteInstance(ServerConfig instance) throws IOException {

@@ -31,13 +31,13 @@ public class InstanceCreator implements NotificationSubscriber, NotificationPubl
     }
 
     private void saveConfiguration(ServerConfig config) {
-        notify("Saving server configuration ...", NotificationType.INFO);
+        notify("Saving server configuration ...", NotificationType.STARTED);
         ServerInstanceManager.getInstance().addInstance(config);
         notify("Saved server configuration", NotificationType.COMPLETED);
     }
 
     private void createDirectory(ServerConfig config) throws IOException {
-        notify("Creating directory ...", NotificationType.INFO);
+        notify("Creating directory ...", NotificationType.STARTED);
 
         Files.createDirectory(Paths.get(config.getAbsoluteStoragePath()));
 
@@ -47,7 +47,7 @@ public class InstanceCreator implements NotificationSubscriber, NotificationPubl
     private void downloadJar(ServerConfig config) throws IOException {
         JarDownloader downloader = new JarDownloader(config, config.getJarStoragePath());
 
-        notify("Downloading jar ...\n", NotificationType.INFO);
+        notify("Downloading jar ...\n", NotificationType.STARTED);
 
         subscribe(downloader);
         downloader.download();
@@ -57,7 +57,7 @@ public class InstanceCreator implements NotificationSubscriber, NotificationPubl
     }
 
     private void createEula(ServerConfig config) throws IOException {
-        notify("Creating eula.txt ...", NotificationType.INFO);
+        notify("Creating eula.txt ...", NotificationType.STARTED);
         Files.writeString(Paths.get(config.getAbsoluteStoragePath() + FileSystems.getDefault().getSeparator() + "eula.txt"), "eula=true");
         notify("Created eula.txt", NotificationType.COMPLETED);
     }

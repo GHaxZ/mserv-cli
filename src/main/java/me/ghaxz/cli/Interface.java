@@ -55,35 +55,42 @@ public class Interface implements NotificationSubscriber {
         System.out.println();
     }
 
-    // Guided server configuration process (fetching all data, display it, read selection, if no default dir require dir specification, RAM size)
-    // No script for startup required, all managed in program (run "java -XmS[RAM_SIZE] -Xmx[RAM_SIZE] -jar [JAR_NAME]" from tool)
     public void configureInterface() {
         System.out.println("Initializing ...");
         ServerConfigBuilder builder = new ServerConfigBuilder();
-        ConfigFile configFile = ConfigFile.getConfig();
 
-        System.out.println("\n-- Configure the server --");
+        builder.setConfigName(configureConfigName());
+        builder.setStorageDirectory(configureSaveDirectory());
+        builder.setType(configureServerSoftware());
+        builder.setVersion(configureSoftwareVersion(builder.getConfig().getType()));
+        builder.setRAM(configureRAM());
 
+        runConfiguration(builder.build());
+    }
+
+    private String configureConfigName() {
         while (true) {
+            System.out.println("\n-- Configure server name --");
+
             System.out.print("\nEnter server instance name: ");
 
             String name = Input.sanatizeString(Input.readString());
 
             if (!name.isBlank()) {
                 if (!ServerInstanceManager.getInstance().instanceNameExists(name)) {
-                    builder.setConfigName(name);
-
-                    break;
+                    return name;
                 } else {
                     System.out.println("\nThis instance name already exists.");
                 }
             }
         }
+    }
 
+    private String configureSaveDirectory() {
         while (true) {
             System.out.println("\n-- Configure save directory --");
 
-            String defaultDir = configFile.getDefaultDirectory();
+            String defaultDir = ConfigFile.getConfig().getDefaultDirectory();
 
             if (defaultDir == null) {
                 System.out.println("\nNo valid default directory configured in config file, directory is required.");
@@ -94,8 +101,7 @@ public class Interface implements NotificationSubscriber {
 
                 if (!dir.isBlank()) {
                     if (Files.isDirectory(Paths.get(dir))) {
-                        builder.setStorageDirectory(dir);
-                        break;
+                        return dir;
                     } else {
                         System.out.println("\nThis is not a valid directory.");
                     }
@@ -107,19 +113,19 @@ public class Interface implements NotificationSubscriber {
                 String dir = Input.sanatizeString(Input.readString());
 
                 if (dir.isBlank()) {
-                    builder.setStorageDirectory(defaultDir);
-                    break;
+                    return defaultDir;
                 } else {
                     if (Files.isDirectory(Paths.get(dir))) {
-                        builder.setStorageDirectory(dir);
-                        break;
+                        return dir;
                     } else {
                         System.out.println("\nThis is not a valid directory.");
                     }
                 }
             }
         }
+    }
 
+    public JarType configureServerSoftware() {
         while (true) {
             System.out.println("\n-- Configure Server Software --");
 
@@ -152,29 +158,29 @@ public class Interface implements NotificationSubscriber {
             String software = Input.sanatizeString(Input.readString());
 
             if (software.isBlank()) {
-                builder.setType(jarTypeManager.getJarTypeByName("vanilla"));
-                break;
+                return jarTypeManager.getJarTypeByName("vanilla");
             } else {
                 JarType type = jarTypeManager.getJarTypeByName(software.toLowerCase());
 
                 if (type != null) {
-                    builder.setType(type);
-                    break;
+                    return type;
                 } else {
                     System.out.println("\nThis is not an available software.");
                 }
             }
         }
+    }
 
+    public JarVersion configureSoftwareVersion(JarType software) {
         while (true) {
-            System.out.println("\n-- Configure server version --");
+            System.out.println("\n-- Configure software version --");
 
-            System.out.println("\nAvailable versions for " + StringHelper.capitalizeString(builder.getConfig().getType().getSoftware()) + ": \n");
+            System.out.println("\nAvailable versions for " + StringHelper.capitalizeString(software.getSoftware()) + ": \n");
 
             JarVersionManager versionManager = null;
 
             try {
-                versionManager = JarVersionManager.getManager(builder.getConfig().getType());
+                versionManager = JarVersionManager.getManager(software);
             } catch (IOException e) {
                 ArgParser.exitWithErrorMessage("\nFailed fetching available versions from API: " + e);
             }
@@ -191,20 +197,20 @@ public class Interface implements NotificationSubscriber {
             String version = Input.sanatizeString(Input.readString());
 
             if (version.isBlank()) {
-                builder.setVersion(versionManager.getNewestVersion());
-                break;
+                return versionManager.getNewestVersion();
             } else {
                 JarVersion jarVersion = versionManager.getJarVersionByVersionName(version);
 
                 if (jarVersion != null) {
-                    builder.setVersion(versionManager.getJarVersionByVersionName(version));
-                    break;
+                    return versionManager.getJarVersionByVersionName(version);
                 } else {
                     System.out.println("\nThis is not an available version.");
                 }
             }
         }
+    }
 
+    public long configureRAM() {
         while (true) {
             System.out.println("\n-- Configure server RAM --");
 
@@ -221,8 +227,7 @@ public class Interface implements NotificationSubscriber {
             String ram = Input.sanatizeString(Input.readString());
 
             if (ram.isBlank()) {
-                builder.setRAM(2048);
-                break;
+                return 2048;
             } else {
                 try {
                     long ramLong = Long.parseLong(ram);
@@ -232,16 +237,13 @@ public class Interface implements NotificationSubscriber {
                     } else if (ramLong > ramSize / 1_000_000) {
                         System.out.println("\n" + ramLong + "MB is larger than the systems RAM size.");
                     } else {
-                        builder.setRAM(ramLong);
-                        break;
+                        return ramLong;
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("\nThis is not a valid RAM value.");
                 }
             }
         }
-
-        runConfiguration(builder.build());
     }
 
     public void deleteInterface(ServerConfig instance) {
@@ -294,12 +296,12 @@ public class Interface implements NotificationSubscriber {
     public void runList(boolean detailed) {
         ArrayList<ServerConfig> instances = ServerInstanceManager.getInstance().getInstances();
 
-        if(instances.isEmpty()) {
-            System.out.println("\nThere are currently no server instances.\n");
+        if (instances.isEmpty()) {
+            System.out.println("\n-- There are currently no server instances. --\n");
             return;
         }
 
-        System.out.println("\nAll server instances" + (detailed ? " in detail" : "") + ":");
+        System.out.println("\n-- All server instances" + (detailed ? " in detail" : "") + " --");
 
         if (detailed) {
             for (ServerConfig config : instances) {
@@ -320,19 +322,63 @@ public class Interface implements NotificationSubscriber {
         System.out.println();
     }
 
+    public void runEdit(ServerConfig instance) {
+        while(true) {
+            System.out.println("\n-- Edit the \"" + instance.getConfigName() + "\" instance configuration --\n");
+
+            System.out.println("[1] RAM: " + instance.getRamMB() + "MB");
+            System.out.println("[2] Name: " + instance.getConfigName());
+            System.out.println("[3] Storage location: " + instance.getStoragePath());
+
+            System.out.print("\nPlease enter the number of the value you want to change: ");
+
+            String selection = Input.sanatizeString(Input.readString());
+
+            ServerConfigBuilder builder = new ServerConfigBuilder(instance);
+
+            if (selection.equals("1")) {
+                builder.setRAM(configureRAM());
+
+                ServerInstanceManager.getInstance().updateInstance(builder.build());
+
+                break;
+            } else if (selection.equals("2")) {
+                builder.setConfigName(configureConfigName());
+
+                // todo implement change of the instance folder name
+
+                break;
+            } else if (selection.equals("3")) {
+                builder.setStorageDirectory(configureSaveDirectory());
+
+                // todo implement moving of the instance folder
+
+                break;
+            } else {
+                System.out.println("\nThis is not an option.");
+            }
+        }
+
+        System.out.println("\nSuccessfully edited the instance configuration.\n");
+    }
+
     @Override
     public void onNotification(NotificationEvent event) {
         switch (event.getType()) {
-            case INFO -> {
-                System.out.print("\n" + event.getMessage());
+            case INFO, ERROR -> {
+                System.out.print("\n" + event.getMessage() + "\n");
             }
 
-            case COMPLETED -> {
-                System.out.println("\n" + event.getMessage());
+            case STARTED -> {
+                System.out.print("\n" + event.getMessage());
             }
 
             case PROGRESS -> {
                 System.out.print("\r" + event.getMessage());
+            }
+
+            case COMPLETED -> {
+                System.out.println("\n" + event.getMessage());
             }
         }
     }

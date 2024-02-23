@@ -46,10 +46,12 @@ public class ArgParser implements NotificationSubscriber {
             case "start" -> parseStartArgument(args);
 
             case "edit" -> {
-                // todo edit server instance
+                parseEditArgument(args);
             }
         }
     }
+
+
 
     private void parseNewArgument(ArrayList<String> args) {
         ServerConfigBuilder builder = new ServerConfigBuilder();
@@ -229,12 +231,33 @@ public class ArgParser implements NotificationSubscriber {
 
             if (ServerInstanceManager.getInstance().instanceNameExists(instanceName)) {
                 ServerConfig instance = ServerInstanceManager.getInstance().getInstanceByName(instanceName);
+                InstanceRunner runner = new InstanceRunner();
 
                 try {
-                    InstanceRunner.runInstance(instance);
+                    subscribe(runner);
+                    runner.runInstance(instance);
+                    unsubscribe(runner);
                 } catch (IOException e) {
                     exitWithErrorMessage("Failed to start instance: " + e);
                 }
+
+            } else {
+                exitWithErrorMessage("No server instance found with name \"" + instanceName + "\".\nRun \"mserv list\" to see all instances.");
+            }
+
+        } else {
+            exitWithErrorMessage("Missing server instance name: start [INSTANCE_NAME]");
+        }
+    }
+
+    private void parseEditArgument(ArrayList<String> args) {
+        if (args.size() > 1) {
+            String instanceName = args.get(1);
+
+            if (ServerInstanceManager.getInstance().instanceNameExists(instanceName)) {
+                ServerConfig instance = ServerInstanceManager.getInstance().getInstanceByName(instanceName);
+
+                Interface.getInterface().runEdit(instance);
 
             } else {
                 exitWithErrorMessage("No server instance found with name \"" + instanceName + "\".\nRun \"mserv list\" to see all instances.");
@@ -255,11 +278,11 @@ public class ArgParser implements NotificationSubscriber {
     @Override
     public void onNotification(NotificationEvent event) {
         switch (event.getType()) {
-            case INFO -> {
-                System.out.print("\n" + event.getMessage());
+            case INFO, ERROR -> {
+                System.out.print("\n" + event.getMessage() + "\n");
             }
 
-            case COMPLETED -> {
+            case STARTED, COMPLETED -> {
                 System.out.println("\n" + event.getMessage());
             }
 
