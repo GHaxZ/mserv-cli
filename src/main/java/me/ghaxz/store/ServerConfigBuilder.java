@@ -13,7 +13,7 @@ public class ServerConfigBuilder {
     }
 
     public ServerConfigBuilder(ServerConfig config) {
-        this.config = config;
+        this.config = new ServerConfig(config);
     }
 
     public ServerConfig getConfig() {

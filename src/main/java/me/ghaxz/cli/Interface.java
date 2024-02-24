@@ -323,43 +323,43 @@ public class Interface implements NotificationSubscriber {
     }
 
     public void runEdit(ServerConfig instance) {
-        while(true) {
+        boolean run = true;
+        ServerConfigBuilder builder = new ServerConfigBuilder(instance);
+
+        while(run) {
+            ServerConfig newConfig = builder.getConfig();
+
             System.out.println("\n-- Edit the \"" + instance.getConfigName() + "\" instance configuration --\n");
 
-            System.out.println("[1] RAM: " + instance.getRamMB() + "MB");
-            System.out.println("[2] Name: " + instance.getConfigName());
-            System.out.println("[3] Storage location: " + instance.getStoragePath());
+            System.out.println("[1] RAM: " + newConfig.getRamMB() + "MB");
+            System.out.println("[2] Name: " + newConfig.getConfigName());
+            System.out.println("[3] Storage location: " + newConfig.getStoragePath());
+            System.out.println("\nEnter \"done\" to finish the configuration.");
 
             System.out.print("\nPlease enter the number of the value you want to change: ");
 
             String selection = Input.sanatizeString(Input.readString());
 
-            ServerConfigBuilder builder = new ServerConfigBuilder(instance);
-
             if (selection.equals("1")) {
                 builder.setRAM(configureRAM());
-
-                ServerInstanceManager.getInstance().updateInstance(builder.build());
-
-                break;
             } else if (selection.equals("2")) {
                 builder.setConfigName(configureConfigName());
-
-                // todo implement change of the instance folder name
-
-                break;
             } else if (selection.equals("3")) {
                 builder.setStorageDirectory(configureSaveDirectory());
-
-                // todo implement moving of the instance folder
-
-                break;
+            } else if (selection.equals("done")) {
+                run = false;
             } else {
                 System.out.println("\nThis is not an option.");
             }
         }
 
-        System.out.println("\nSuccessfully edited the instance configuration.\n");
+        try {
+            ServerInstanceManager.getInstance().updateInstance(instance, builder.build());
+        } catch (IOException e) {
+            ArgParser.exitWithErrorMessage("Failed changing the instance configuration: " + e);
+        }
+
+        System.out.println("\nFinished the instance configuration.\n");
     }
 
     @Override

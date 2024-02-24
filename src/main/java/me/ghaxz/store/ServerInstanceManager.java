@@ -7,14 +7,13 @@ import me.ghaxz.cli.ArgParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /*
 Manages and stores all server configurations and gets serialized,
@@ -52,18 +51,24 @@ public class ServerInstanceManager {
         writeToSerialized();
     }
 
-    public void updateInstance(ServerConfig newConfig) {
-        Optional<ServerConfig> instance = instances.stream().filter(conf -> conf.equals(newConfig)).findFirst();
+    public void updateInstance(ServerConfig originalInstance, ServerConfig newConfig) throws IOException {
+        int index = instances.indexOf(originalInstance);
 
-        if(instance.isPresent()) {
-            ServerConfig oldConfig = instance.get();
+        if(index == -1) return;
 
-            instances.set(instances.indexOf(oldConfig), newConfig);
+        instances.set(index, newConfig);
 
-            // todo update storage path and directory name if necessary
+        moveServerInstance(originalInstance, Path.of(newConfig.getAbsoluteStoragePath()));
+    }
 
-            writeToSerialized();
+    private void moveServerInstance(ServerConfig instance, Path newDir) throws IOException {
+        Path oldDir = Path.of(instance.getAbsoluteStoragePath());
+
+        if(oldDir.equals(newDir)) {
+            return;
         }
+
+        // TODO: implement the moving of server instance files to new directory (name change or storage dir change)
     }
 
     public void deleteInstance(ServerConfig instance) throws IOException {

@@ -6,10 +6,11 @@ import java.util.Objects;
 /*
 Stores information about a configured server instance, that gets serialized for storing server instance configuration details
  */
-public class ServerConfig {
+public class ServerConfig implements Cloneable {
     private String configName;
     private String storagePath;
     private String absoluteStoragePath;
+
     private String jarStoragePath;
     private JarType type;
     private JarVersion version;
@@ -28,6 +29,20 @@ public class ServerConfig {
         version = null;
 
         ramMB = 0;
+    }
+
+    public ServerConfig(ServerConfig config) {
+        this.configName = config.getConfigName();
+
+        storagePath = config.getStoragePath();
+
+        absoluteStoragePath = config.getAbsoluteStoragePath();
+
+        type = config.getType();
+
+        version = config.getVersion();
+
+        ramMB = config.getRamMB();
     }
 
     public void setConfigName(String configName) {
@@ -95,5 +110,13 @@ public class ServerConfig {
                 ", version=" + version +
                 ", ram=" + ramMB +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ServerConfig config = (ServerConfig) o;
+        return Objects.equals(configName, config.configName);
     }
 }
