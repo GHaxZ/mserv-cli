@@ -23,7 +23,9 @@ public class NotificationManager {
     }
 
     public void addSubscriber(NotificationSubscriber subscriber) {
-        subscribers.add(subscriber);
+        if(!subscribers.contains(subscriber)) {
+            subscribers.add(subscriber);
+        }
     }
 
     public void removeSubscriber(NotificationSubscriber subscriber) {
