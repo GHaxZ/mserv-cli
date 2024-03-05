@@ -27,7 +27,6 @@ public class ServerInstanceManager {
     private final Path directory = Paths.get("./instances.json");
     private ArrayList<ServerConfig> instances;
 
-
     private ServerInstanceManager() {
         instances = new ArrayList<>();
         readFromSerialized();
@@ -64,9 +63,7 @@ public class ServerInstanceManager {
     private void moveServerInstance(ServerConfig instance, Path newDir) throws IOException {
         Path oldDir = Path.of(instance.getAbsoluteStoragePath());
 
-        if(oldDir.equals(newDir)) {
-            return;
-        }
+//        if(oldDir.equals(newDir)) return;
 
         // TODO: implement the moving of server instance files to new directory (name change or storage dir change)
     }
