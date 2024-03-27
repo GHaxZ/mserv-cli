@@ -1,0 +1,29 @@
+## Usage ideas
+
+mserv new Test --dir C: --software purpur --version 1.20.2 --ram 8192
+--> Infos auflisten, y/n
+
+mserv delete [NAME]
+--> Infos auflisten wenn Instanz gefunden, y/n
+
+mserv list -d
+--> Alle Instanzen auflisten
+--> -d -> Detailreiche Ausgabe
+
+mserv start [NAME]
+--> Instanz starten
+
+mserv edit [NAME]
+--> Instanz bearbeiten (RAM, Name, Storage directory), y/n
+
+## Polishing ideas
+Make the user aware of the actual storage location (C:\Users\[USER]\Desktop\[CONFIG_NAME])
+Make sure the directory that's trying to be created does not exist
+
+## Implementation improvement ideas
+- Handle Exceptions through an ErrorHandler class to make frontend more independent of backend
+- Make it possible to run server instances in the background with additional flag, so the terminal in- and output is not blocked. Use redirect Output to file.
+Also, maybe make it possible to then to enter the instance output and input through tool.
+- Change command line argument parsing, since it has many possible bugs (Instance names with spaces don't work correctly) - maybe use library
+- notification system display maybe has to be change when later implementing gui
+- Make the ServerInstanceManager handle the entire server setup up process, not other way around, so the setup process can be aborted and cleaned up
