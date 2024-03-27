@@ -17,13 +17,9 @@ public class ConfigFile {
     private static final Path configPath = Paths.get("./mserv.conf");
     private final Properties properties = new Properties();
 
-    public static ConfigFile getConfig() {
+    public static ConfigFile getConfig() throws IOException {
         if(instance == null) {
-            try {
-                instance = new ConfigFile();
-            } catch (IOException e) {
-                ArgParser.exitWithErrorMessage("Failed loading config file: " + e);
-            }
+            instance = new ConfigFile();
         }
 
         return instance;

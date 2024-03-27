@@ -90,7 +90,15 @@ public class Interface implements NotificationSubscriber {
         while (true) {
             System.out.println("\n-- Configure save directory --");
 
-            String defaultDir = ConfigFile.getConfig().getDefaultDirectory();
+            ConfigFile configFile = null;
+
+            try {
+                configFile = ConfigFile.getConfig();
+            } catch (IOException e) {
+                CommandLineParser.exitWithErrorMessage("\nFailed opening config file: " + e);
+            }
+
+            String defaultDir = configFile.getDefaultDirectory();
 
             if (defaultDir == null) {
                 System.out.println("\nNo valid default directory configured in config file, directory is required.");
@@ -214,7 +222,7 @@ public class Interface implements NotificationSubscriber {
         while (true) {
             System.out.println("\n-- Configure server RAM --");
 
-            System.out.println("\nMake sure to choose a sensible amount of RAM.\n" +
+            System.out.println("\nMake sure to choose a sensible amount of RAM, otherwise your server may not start or perform poorly.\n" +
                     "Generally, you shouldn't use more than half of your RAM, if you're also playing on this system.");
 
             long ramSize = ((OperatingSystemMXBean) ManagementFactory
@@ -234,8 +242,6 @@ public class Interface implements NotificationSubscriber {
 
                     if (ramLong < 1) {
                         System.out.println("\nThe RAM amount needs to be more than 0MB.");
-                    } else if (ramLong > ramSize / 1_000_000) {
-                        System.out.println("\n" + ramLong + "MB is larger than the systems RAM size.");
                     } else {
                         return ramLong;
                     }

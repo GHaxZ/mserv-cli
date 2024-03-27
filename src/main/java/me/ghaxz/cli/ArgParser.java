@@ -82,7 +82,12 @@ public class ArgParser implements NotificationSubscriber {
                     exitWithErrorMessage("Missing save directory: \"--dir [DIRECTORY]\"");
                 }
             } else {
-                String defaultDir = ConfigFile.getConfig().getDefaultDirectory();
+                String defaultDir = null;
+                try {
+                    defaultDir = ConfigFile.getConfig().getDefaultDirectory();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
 
                 if (defaultDir == null) {
                     exitWithErrorMessage("Couldn't read a valid default directory from config file.\n" +

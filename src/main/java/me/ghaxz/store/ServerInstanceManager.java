@@ -69,6 +69,21 @@ public class ServerInstanceManager {
         }
 
         // TODO: implement the moving of server instance files to new directory (name change or storage dir change)
+
+        // Create new directory
+        Files.createDirectory(newDir);
+
+        // Walk old directory, move to new directory
+        Files.walk(oldDir)
+                .forEach(path -> {
+                    try {
+                        Path newPath = newDir.resolve(oldDir.relativize(path));
+
+                        Files.move(path, newPath);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
     }
 
     public void deleteInstance(ServerConfig instance) throws IOException {
